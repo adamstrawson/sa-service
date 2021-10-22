@@ -8,7 +8,7 @@ spec:
   maxHistory: 2
   chart:
     repository: https://adamstrawson.github.io/sa-helm-charts/
-    name: sa-service
+    name: sa-chart
     version: 1.0.1
   values:
     name: sa-service
