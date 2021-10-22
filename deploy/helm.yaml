@@ -1,0 +1,31 @@
+---
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: sa-service
+  namespace: development
+spec:
+  maxHistory: 2
+  chart:
+    repository: https://adamstrawson.github.io/sa-helm-charts/
+    name: sa-service
+    version: 1.0.1
+  values:
+    name: sa-service
+    image: adamstrawson/sa-service:latest
+    deployment:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: "1"
+          memory: 512Mi
+      env:
+      - name: MY_ENV_VAR
+        value: "helloworld"
+    hpa:
+      enabled: true
+      minPods: 3
+      maxPods: 6
+      targetCPU: 50

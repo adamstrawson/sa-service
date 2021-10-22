@@ -1,0 +1,31 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/application
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build -t sa-service .
+      - deploy:
+          name: Push application Docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+              docker tag sa-service "adamstrawson/sa-service:${CIRCLE_SHA1}"
+              docker push "adamstrawson/sa-service:${CIRCLE_SHA1}"
+            fi
+      - run:
+          name: Update helm release
+          command: |
+            sed -i 's/image: adamstrawson\/sa-service:.*/image: adamstrawson\/sa-service:'${CIRCLE_SHA1}'/' ~/application/deploy/helm.yaml
+            git config credential.helper 'cache --timeout=120'
+            git config user.email "adam@adamstrawson.com"
+            git config user.name "Circleci"
+            git add deploy/helm.yaml
+            git commit --allow-empty -m "[skip ci] Update Image Tag - ${CIRCLE_SHA1}"
+            git push -q https://${GITHUB_TOKEN}@github.com/adamstrawson/sa-service.git main
