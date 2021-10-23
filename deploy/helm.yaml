@@ -12,7 +12,7 @@ spec:
     version: 1.0.1
   values:
     name: sa-service
-    image: adamstrawson/sa-service:574e2e3d699c3b9671e9efe6364ecf4debd42382
+    image: adamstrawson/sa-service:87c28bef5404e96d0763bb1047932d8dfb2532b7
     deployment:
       resources:
         requests:
